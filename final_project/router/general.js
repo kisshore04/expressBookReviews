@@ -6,21 +6,39 @@ const public_users = express.Router();
 
 
 public_users.post("/register", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+
+  try {
+    const { username , password } = req.body;
+  
+    if(!username || !password) {
+      return res.status(400).json({"error" : "username and password are required"})
+    }
+  
+    if(users.some(user => user.username === username)) {
+      return res.status(409).json({"error" : "username already exists"})
+    }
+  
+    users.push({ username, password})
+  
+    return res.status(201).json({ "message" : "user registered successfully",users})
+    
+  } catch (error) {
+    return res.status(500).json({error})
+  }
+
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
+public_users.get('/',async function (req, res) {
     try {
-        res.status(200).json(JSON.stringify(books));
+        res.status(200).json(books);
     } catch (error) {
         res.status(500).json({error})
     }
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
+public_users.get('/isbn/:isbn', async function (req, res) {
     try {
         const isbn = req.params.isbn;
         if(books.hasOwnProperty(isbn)){
@@ -36,7 +54,7 @@ public_users.get('/isbn/:isbn',function (req, res) {
  });
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
+public_users.get('/author/:author', async function (req, res) {
     try {
         const requestedAuthor = req.params.author;
     
@@ -63,7 +81,7 @@ public_users.get('/author/:author',function (req, res) {
 });
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title',async function (req, res) {
     try {
         const requestedTitle = req.params.title;
     
@@ -90,7 +108,7 @@ public_users.get('/title/:title',function (req, res) {
 });
 
 //  Get book review
-public_users.get('/review/:isbn',function (req, res) {
+public_users.get('/review/:isbn',async function (req, res) {
     try {
         const requestedIsbn = req.params.isbn;
     
